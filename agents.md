@@ -23,3 +23,4 @@ All agents contributing to this repository **must** follow these steps before st
 | 2024-08-21   | Jules      | Added comprehensive development instructions to `README.md`. Created a placeholder `main.ts` entry point and added `start`/`dev` run tasks to `deno.jsonc`. |
 | 2024-08-21   | Jules      | Defined the core domain models (`User`, `Queue`, `Business`) in `src/core/domain`.                                                                                             |
 | 2024-08-21   | Jules      | Refined the core domain models to be classes and updated their properties based on user feedback.                                                                              |
+| 2024-08-21   | Jules      | Implemented `MockAuthAdapter` to provide a test implementation of the `AuthPort`.                                                                                                |
