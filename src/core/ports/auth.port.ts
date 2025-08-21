@@ -7,8 +7,14 @@ import { User } from "../domain/user.ts";
  */
 export interface AuthPort {
   /**
-   * Retrieves the currently authenticated user.
-   * @returns A Promise that resolves to the User object if authenticated, or null otherwise.
+   * Initiates the sign-in or registration flow.
+   * @returns A Promise that resolves to the authenticated User object, or null if the process fails.
    */
-  getAuthenticatedUser(): Promise<User | null>;
+  signOrLogIn(): Promise<User | null>;
+
+  /**
+   * Signs the current user out.
+   * @returns A Promise that resolves when the sign-out process is complete.
+   */
+  signOut(): Promise<void>;
 }
