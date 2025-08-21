@@ -21,3 +21,5 @@ All agents contributing to this repository **must** follow these steps before st
 | 2024-08-21   | Jules 2.0  | Initialized the project with core documentation files: `plan.md`, `architecture.md`, `agents.md`, `tasks.md`, and `README.md`. |
 | 2024-08-21   | Jules      | Set up the initial Deno project structure, including directories for the hexagonal architecture and a `deno.jsonc` configuration file with strict TypeScript enabled. |
 | 2024-08-21   | Jules      | Added comprehensive development instructions to `README.md`. Created a placeholder `main.ts` entry point and added `start`/`dev` run tasks to `deno.jsonc`. |
+| 2024-08-21   | Jules      | Defined the core domain models (`User`, `Queue`, `Business`) in `src/core/domain`.                                                                                             |
+| 2024-08-21   | Jules      | Refined the core domain models to be classes and updated their properties based on user feedback.                                                                              |
