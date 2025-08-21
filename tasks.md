@@ -3,7 +3,7 @@
 This file tracks actionable tasks for the project.
 
 - [x] Initialize project documentation (plan, architecture, agents, tasks, readme)
-- [ ] Set up Deno.js and TypeScript project structure
+- [x] Set up Deno.js and TypeScript project structure
 - [ ] Define core domain models (e.g., User, Queue, Business)
 - [ ] Define `AuthPort` interface in the core
 - [ ] Define `QueueApiPort` interface in the core
