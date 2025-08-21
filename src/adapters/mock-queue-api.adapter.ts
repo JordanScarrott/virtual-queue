@@ -1,6 +1,6 @@
 import type { QueueApiPort } from "../core/ports/queue-api.port.ts";
 import type { Business } from "../core/domain/business.ts";
-import type { Queue } from "../core/domain/queue.ts";
+import { Queue } from "../core/domain/queue.ts";
 import type { User } from "../core/domain/user.ts";
 import { mockBusinesses, mockQueues, mockUsers } from "./mock-data.ts";
 
@@ -14,7 +14,7 @@ const ERROR_BUSINESS_NOT_FOUND = "Business not found";
 export class MockQueueApiAdapter implements QueueApiPort {
   private users: User[];
   private businesses: Business[];
-  private queues: Record<string, Queue>;
+  private queues: Record<string, any>; // Internal state uses mock data shape
 
   constructor() {
     // Create deep copies to ensure the adapter manages its own state
@@ -25,11 +25,20 @@ export class MockQueueApiAdapter implements QueueApiPort {
 
   // --- Private Helpers ---
 
-  private findQueue(queueId: string): Promise<Queue> {
-    const queue = this.queues[queueId];
-    return queue
-      ? Promise.resolve(queue)
-      : Promise.reject(new Error(ERROR_QUEUE_NOT_FOUND));
+  private async findQueue(queueId: string): Promise<Queue> {
+    const mockQueue = this.queues[queueId];
+    if (!mockQueue) {
+      return Promise.reject(new Error(ERROR_QUEUE_NOT_FOUND));
+    }
+    // Adapt the mock data structure to the domain `Queue` class
+    const userIds = mockQueue.users.map((u: User) => u.id);
+    const domainQueue = new Queue(
+      mockQueue.id,
+      mockQueue.name,
+      userIds,
+      mockQueue.businessId,
+    );
+    return Promise.resolve(domainQueue);
   }
 
   private findUser(userId: string): Promise<User> {
@@ -40,56 +49,45 @@ export class MockQueueApiAdapter implements QueueApiPort {
   }
 
   private findBusiness(businessId: string): Promise<Business> {
-      const business = this.businesses.find((b) => b.id === businessId);
-      return business
-        ? Promise.resolve(business)
-        : Promise.reject(new Error(ERROR_BUSINESS_NOT_FOUND));
+    const business = this.businesses.find((b) => b.id === businessId);
+    return business
+      ? Promise.resolve(business)
+      : Promise.reject(new Error(ERROR_BUSINESS_NOT_FOUND));
   }
 
   // --- Public API ---
 
   public async getQueueDetails(queueId: string): Promise<Queue> {
-    const queue = await this.findQueue(queueId);
-    return JSON.parse(JSON.stringify(queue));
+    return this.findQueue(queueId);
   }
 
   public async joinQueue(userId: string, queueId: string): Promise<Queue> {
-    const [queue, user] = await Promise.all([
-      this.findQueue(queueId),
-      this.findUser(userId),
-    ]);
-
-    if (queue.users.some((u) => u.id === userId)) {
-      // User is already in the queue, return the current state
-      return JSON.parse(JSON.stringify(queue));
+    await this.findUser(userId); // Ensure user exists
+    const mockQueue = this.queues[queueId];
+    if (!mockQueue) {
+      throw new Error(ERROR_QUEUE_NOT_FOUND);
     }
 
-    // Immutable update
-    const updatedQueue = {
-      ...queue,
-      users: [...queue.users, user],
-    };
+    const userIsInQueue = mockQueue.users.some((u: User) => u.id === userId);
+    if (!userIsInQueue) {
+      const userToAdd = this.users.find(u => u.id === userId);
+      if (userToAdd) {
+        mockQueue.users.push(userToAdd);
+      }
+    }
 
-    this.queues[queueId] = updatedQueue;
-    return JSON.parse(JSON.stringify(updatedQueue));
+    return this.findQueue(queueId);
   }
 
   public async leaveQueue(userId: string, queueId: string): Promise<void> {
-    const queue = await this.findQueue(queueId);
+    const mockQueue = this.queues[queueId];
+    if (!mockQueue) {
+      throw new Error(ERROR_QUEUE_NOT_FOUND);
+    }
 
-    const userIndex = queue.users.findIndex((u) => u.id === userId);
-
+    const userIndex = mockQueue.users.findIndex((u: User) => u.id === userId);
     if (userIndex > -1) {
-      // Immutable update
-      const updatedUsers = [
-        ...queue.users.slice(0, userIndex),
-        ...queue.users.slice(userIndex + 1),
-      ];
-      const updatedQueue = {
-        ...queue,
-        users: updatedUsers,
-      };
-      this.queues[queueId] = updatedQueue;
+      mockQueue.users.splice(userIndex, 1);
     }
 
     return Promise.resolve();

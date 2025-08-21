@@ -1,3 +1,5 @@
+import { Business } from "./business.ts";
+
 /**
  * Represents a virtual queue or line for a specific service at a business.
  *
@@ -19,3 +21,15 @@ export class Queue {
     public readonly businessId: string,
   ) {}
 }
+
+/**
+ * Provides a more detailed view of a queue, suitable for displaying to users.
+ *
+ * This type combines the core `Queue` information with additional computed
+ * properties like the total number of users and the estimated wait time.
+ */
+export type QueueDetails = Queue & {
+  business: Business;
+  userCount: number;
+  estimatedWaitTime: number; // in minutes
+};
