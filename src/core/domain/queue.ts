@@ -1,10 +1,14 @@
-import { Business } from "./business.ts";
+import type { Business } from "./business.ts";
 
 /**
  * Represents a virtual queue or line for a specific service at a business.
  *
  * A queue is a central entity where users are organized in a first-in, first-out
  * manner. It manages the order of users and provides status information.
+ *
+ * In line with the database-oriented design, this class is a simple data
+ * container. It can be enriched with additional properties by adapters for
+ * display purposes.
  */
 export class Queue {
   /**
@@ -13,23 +17,17 @@ export class Queue {
    * @param userIds - An ordered array of user IDs currently in the queue.
    *   The user at index 0 is at the front of the line.
    * @param businessId - The ID of the `Business` that owns this queue.
+   * @param business - (Optional) The full `Business` object, often enriched by an adapter.
+   * @param userCount - (Optional) The total number of users in the queue, enriched by an adapter.
+   * @param estimatedWaitTime - (Optional) The estimated wait time in minutes, enriched by an adapter.
    */
   constructor(
     public readonly id: string,
     public readonly name: string,
     public userIds: string[],
     public readonly businessId: string,
+    public business?: Business,
+    public userCount?: number,
+    public estimatedWaitTime?: number,
   ) {}
 }
-
-/**
- * Provides a more detailed view of a queue, suitable for displaying to users.
- *
- * This type combines the core `Queue` information with additional computed
- * properties like the total number of users and the estimated wait time.
- */
-export type QueueDetails = Queue & {
-  business: Business;
-  userCount: number;
-  estimatedWaitTime: number; // in minutes
-};
