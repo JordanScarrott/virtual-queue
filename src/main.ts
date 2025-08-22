@@ -1,6 +1,7 @@
 import { MockAuthAdapter } from "./adapters/auth/mock.adapter.ts";
 import { MockQueueApiAdapter } from "./adapters/mock-queue-api.adapter.ts";
 import { CliAdapter } from "./adapters/driving/cli.adapter.ts";
+import type { Queue } from "./core/domain/queue.ts";
 
 async function main() {
   console.log("--- Initializing Mock Adapters and CLI Adapter ---");
@@ -12,7 +13,7 @@ async function main() {
   const aliceId = "user-1";
   const coffeeQueueId = "q-1";
 
-  const printQueueDetails = (queue: any) => {
+  const printQueueDetails = (queue: Queue | null) => {
     if (!queue) {
       console.log("Queue not found or error fetching details.");
       return;
